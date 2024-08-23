@@ -11,45 +11,45 @@ import java.util.List;
 
 public class GameFunctions {
     private final MessageSender messageSender;
-    private boolean isHidden = false;
     private String answer = "";
     private boolean isPlay;
     private int randomBotNum = 0;
-
 
     public GameFunctions(MessageSender messageSender) {
         this.messageSender = messageSender;
     }
 
-    public void startGame(List<User> users) {
-
-    }
-
     public void currentGame(Update update) {
-        randomBotNum = (int) (Math.random() * 10);
+        randomBotNum = (int) (Math.random() * 10) + 1;
         long idUser = update.getCallbackQuery().getMessage().getChatId();
         sendSearchButtons(idUser);
-    }
-
-    private void sendSearchButtons(long chatID) {
-
-    }
-
-    public void resetGame() {
-        isHidden = false;
-        answer = "";
         isPlay = true;
+        answer = "";
+        System.out.println("randomBotNum = " + randomBotNum);
     }
 
-    public void offerNewGame(Update update) {
-        long idUser = update.getCallbackQuery().getMessage().getChatId();
-        messageSender.sendText(idUser, "🎉 Игра закончена! 🎉\n\nХотите сыграть еще раз? Нажмите кнопку ниже, чтобы начать новую игру.");
+    void sendSearchButtons(long chatID) {
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+        for (int i = 1; i <= 10; i++) {
+            InlineKeyboardButton button = InlineKeyboardButton.builder()
+                    .text("Число " + i)
+                    .callbackData("Число " + i)
+                    .build();
+            if (rows.isEmpty() || rows.get(rows.size() - 1).size() == 5) {
+                rows.add(new ArrayList<>());
+            }
+            rows.get(rows.size() - 1).add(button);
+        }
 
+        InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
+        keyboardMarkup.setKeyboard(rows);
+        messageSender.sendMenu(chatID, "❓\uFE0F Выберите, какое число выбрал бот: ", keyboardMarkup);
     }
 
     private void sendNewGameButton(long chatID) {
         InlineKeyboardButton button = InlineKeyboardButton.builder()
-                .text("Начать новую игру").callbackData("Start New Game")
+                .text("Начать новую игру")
+                .callbackData("Start New Game")
                 .build();
 
         List<InlineKeyboardButton> row = new ArrayList<>();
@@ -62,15 +62,26 @@ public class GameFunctions {
 
     public void handleNewGameRequest(Update update, List<User> users) {
         if (update.getCallbackQuery().getData().equals("Start New Game")) {
-
+            currentGame(update);
         }
     }
 
-    public boolean isPlay() {
-        return isPlay;
-    }
+
 
     public void setPlay(boolean play) {
         isPlay = play;
+    }
+
+    public void checkNum(String data, long idUser) {
+        if (data.equals("Число " + randomBotNum)) {
+            answer = "🎉 Вы выиграли! 🎉";
+        }
+        if (!data.equals("Число " + randomBotNum)) {
+            answer = "��� Вы проиграли! ���";
+        }
+        isPlay = false;
+        messageSender.sendText(idUser, answer);
+        sendNewGameButton(idUser);
+
     }
 }

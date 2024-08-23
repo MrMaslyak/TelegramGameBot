@@ -34,7 +34,7 @@ public class Bot extends TelegramLongPollingBot implements MessageSender {
     @Override
     public String getBotToken() {
         try {
-            return saveForData.getToken("passwordBot.txt");
+            return SaveForData.getToken("passwordBot.txt");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -42,22 +42,36 @@ public class Bot extends TelegramLongPollingBot implements MessageSender {
 
     @Override
     public void onUpdateReceived(Update update) {
-        long idUser;
         if (update.hasCallbackQuery()) {
-            idUser = update.getCallbackQuery().getMessage().getChatId();
+            long idUser = update.getCallbackQuery().getMessage().getChatId();
+            String data = update.getCallbackQuery().getData();
+            System.out.println("data = " + data);
+            System.out.println("idUser = " + idUser);
+            if (data.equals("Start Game")) {
+                gameFunctions.setPlay(true);
+                gameFunctions.currentGame(update);
+            } else if (data.equals("Start New Game")) {
+                gameFunctions.handleNewGameRequest(update, null);
+            } else {
+                gameFunctions.checkNum(data, idUser);
+            }
+        } else {
+            long idUser = update.getMessage().getChatId();
+            sendButtons(idUser);
         }
     }
 
-
-    public void sendButtons ( long idUser){
-        InlineKeyboardButton next = InlineKeyboardButton.builder()
-                .text("Start Game").callbackData("Start Game")
+    public void sendButtons(long idUser) {
+        InlineKeyboardButton startButton = InlineKeyboardButton.builder()
+                .text("Start Game")
+                .callbackData("Start Game")
                 .build();
 
+        List<InlineKeyboardButton> row = new ArrayList<>();
+        row.add(startButton);
+
         InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
-        List<InlineKeyboardButton> keyboard = new ArrayList<>();
-        keyboard.add(next);
-        keyboardMarkup.setKeyboard(Collections.singletonList(keyboard));
+        keyboardMarkup.setKeyboard(Collections.singletonList(row));
         sendMenu(idUser, "\uD83C\uDF89 Добро пожаловать в игру \"Угадай Число\"! \uD83C\uDF89\n" +
                 "\n" +
                 "\uD83D\uDD22 Правила просты: бот загадывает число от 1 до 10, а ваша задача — угадать его!\n" +
@@ -71,7 +85,6 @@ public class Bot extends TelegramLongPollingBot implements MessageSender {
                 "\n" +
                 "\uD83D\uDCE3 Готовы начать? Жмите на кнопку и пробуйте свои силы! Удачи! \uD83C\uDF40", keyboardMarkup);
     }
-
 
     @Override
     public void sendText(Long who, String what) {
@@ -89,16 +102,15 @@ public class Bot extends TelegramLongPollingBot implements MessageSender {
 
     @Override
     public void sendMenu(Long who, String txt, InlineKeyboardMarkup kb) {
-            SendMessage sm = SendMessage.builder().chatId(who.toString())
-                    .parseMode("HTML").text(txt)
-                    .replyMarkup(kb).build();
+        SendMessage sm = SendMessage.builder()
+                .chatId(who.toString())
+                .parseMode("HTML").text(txt)
+                .replyMarkup(kb).build();
 
-            try {
-                execute(sm);
-            } catch (TelegramApiException e) {
-                throw new RuntimeException(e);
-            }
+        try {
+            execute(sm);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
         }
-
     }
-
+}
