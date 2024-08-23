@@ -1,6 +1,7 @@
 package org.example;
 
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
@@ -13,6 +14,8 @@ public class GameFunctions {
     private boolean isHidden = false;
     private String answer = "";
     private boolean isPlay;
+    private int randomBotNum = 0;
+
 
     public GameFunctions(MessageSender messageSender) {
         this.messageSender = messageSender;
@@ -22,29 +25,26 @@ public class GameFunctions {
 
     }
 
-    public void currentGame(Update update, List<User> users) {
-
-    }
-
-    private void sendHideButtons(long chatID) {
-
+    public void currentGame(Update update) {
+        randomBotNum = (int) (Math.random() * 10);
+        long idUser = update.getCallbackQuery().getMessage().getChatId();
+        sendSearchButtons(idUser);
     }
 
     private void sendSearchButtons(long chatID) {
 
     }
 
-    public void resetGame(List<User> users) {
+    public void resetGame() {
         isHidden = false;
         answer = "";
         isPlay = true;
     }
 
-    public void offerNewGame(List<User> users) {
-        messageSender.sendText(users.get(0).getChatID(), "🎉 Игра закончена! 🎉\n\nХотите сыграть еще раз? Нажмите кнопку ниже, чтобы начать новую игру.");
-        messageSender.sendText(users.get(1).getChatID(), "🎉 Игра закончена! 🎉\n\nХотите сыграть еще раз? Нажмите кнопку ниже, чтобы начать новую игру.");
-        sendNewGameButton(users.get(0).getChatID());
-        sendNewGameButton(users.get(1).getChatID());
+    public void offerNewGame(Update update) {
+        long idUser = update.getCallbackQuery().getMessage().getChatId();
+        messageSender.sendText(idUser, "🎉 Игра закончена! 🎉\n\nХотите сыграть еще раз? Нажмите кнопку ниже, чтобы начать новую игру.");
+
     }
 
     private void sendNewGameButton(long chatID) {
@@ -62,8 +62,7 @@ public class GameFunctions {
 
     public void handleNewGameRequest(Update update, List<User> users) {
         if (update.getCallbackQuery().getData().equals("Start New Game")) {
-            resetGame(users);
-            startGame(users);
+
         }
     }
 
