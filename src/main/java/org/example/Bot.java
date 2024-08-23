@@ -16,11 +16,18 @@ public class Bot extends TelegramLongPollingBot implements MessageSender {
     private boolean isStartGame;
     private GameFunctions gameFunctions;
     private final SaveForData saveForData;
+    private static Update update;
 
     public Bot(GameFunctions gameFunctions, SaveForData saveForData) {
         this.gameFunctions = gameFunctions;
         this.saveForData = saveForData;
     }
+
+
+    public static Update getUpdate() {
+        return update;
+    }
+
 
     public void setGameFunctions(GameFunctions gameFunctions) {
         this.gameFunctions = gameFunctions;
@@ -42,29 +49,31 @@ public class Bot extends TelegramLongPollingBot implements MessageSender {
 
     @Override
     public void onUpdateReceived(Update update) {
-        if (update.hasCallbackQuery()) {
-            long idUser = update.getCallbackQuery().getMessage().getChatId();
-            String data = update.getCallbackQuery().getData();
-            System.out.println("data = " + data);
-            System.out.println("idUser = " + idUser);
-            if (data.equals("Start Game")) {
-                gameFunctions.setPlay(true);
-                gameFunctions.currentGame(update);
-            } else if (data.equals("Start New Game")) {
-                gameFunctions.handleNewGameRequest(update, null);
-            } else {
-                gameFunctions.checkNum(data, idUser);
-            }
-        } else {
+        if (update.hasMessage() && update.getMessage().hasText()) {
             long idUser = update.getMessage().getChatId();
-            sendButtons(idUser);
+            String text = update.getMessage().getText();
+            if (text.equals("/start")) {
+                sendButtons(idUser);
+            }
+        } else if (update.hasCallbackQuery()) {
+            String callbackData = update.getCallbackQuery().getData();
+            long chatId = update.getCallbackQuery().getMessage().getChatId();
+
+            System.out.println("CallbackData: " + callbackData);
+
+            if (callbackData.equals("Начать приготовление")) {
+                gameFunctions.sendTypeCoffee(chatId);
+                gameFunctions.currentGame(update);
+            } else {
+                gameFunctions.currentGame(update);
+            }
         }
     }
 
     public void sendButtons(long idUser) {
         InlineKeyboardButton startButton = InlineKeyboardButton.builder()
-                .text("Start Game")
-                .callbackData("Start Game")
+                .text("Начать приготовление")
+                .callbackData("Начать приготовление")
                 .build();
 
         List<InlineKeyboardButton> row = new ArrayList<>();
@@ -72,18 +81,13 @@ public class Bot extends TelegramLongPollingBot implements MessageSender {
 
         InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
         keyboardMarkup.setKeyboard(Collections.singletonList(row));
-        sendMenu(idUser, "\uD83C\uDF89 Добро пожаловать в игру \"Угадай Число\"! \uD83C\uDF89\n" +
+        sendMenu(idUser, "☕\uFE0F Приветствуем в 'Кофейный мастер'! ☕\uFE0F\n" +
                 "\n" +
-                "\uD83D\uDD22 Правила просты: бот загадывает число от 1 до 10, а ваша задача — угадать его!\n" +
+                "Вдохновитесь ароматом свежесваренного кофе и создайте свой идеальный напиток с нами! \uD83C\uDF89\n" +
                 "\n" +
-                "\uD83C\uDFAF Как играть:\n" +
+                "Выберите тип кофе, настройте крепость, добавьте любимые ингредиенты, и мы поможем вам приготовить идеальный кофе за несколько шагов. \uD83C\uDF1F\n" +
                 "\n" +
-                "Нажмите на одну из кнопок ниже, чтобы выбрать число.\n" +
-                "Бот сразу скажет, угадали вы или нет.\n" +
-                "Если не угадали — не сдавайтесь, пробуйте снова! \uD83D\uDD04\n" +
-                "\uD83C\uDFC6 Цель: угадать число как можно быстрее и получить поздравление от бота! \uD83C\uDF8A\n" +
-                "\n" +
-                "\uD83D\uDCE3 Готовы начать? Жмите на кнопку и пробуйте свои силы! Удачи! \uD83C\uDF40", keyboardMarkup);
+                "Готовы начать? Давайте варить! \uD83D\uDC47", keyboardMarkup);
     }
 
     @Override
