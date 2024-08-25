@@ -35,10 +35,22 @@ public class Bot extends TelegramLongPollingBot implements MessageSender {
 
     @Override
     public void onUpdateReceived(Update update) {
-        long idUser = update.getMessage().getFrom().getId();
-        String txt = update.getMessage().getText();
-        if (txt.equals("/start")) {
-            sendButtons(idUser);
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            long idUser = update.getMessage().getChatId();
+            String text = update.getMessage().getText();
+            if (text.equals("/start")) {
+                sendButtons(idUser);
+            }
+        } else if (update.hasCallbackQuery()) {
+            String callbackData = update.getCallbackQuery().getData();
+            long chatId = update.getCallbackQuery().getMessage().getChatId();
+
+            System.out.println("CallbackData: " + callbackData);
+
+            if (callbackData.equals("Выбрать Тему")) {
+                gameFunctions.sendButtonsTypeQuest(chatId);
+
+            }
         }
     }
 

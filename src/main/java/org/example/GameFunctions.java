@@ -21,10 +21,13 @@ public class GameFunctions {
 
 
     public void startGame(Update update) {
+        switch ( ) {
 
+
+        }
     }
 
-    private void sendButtons(long chatID) {
+    void sendButtonsTypeQuest(long chatID) {
             List<InlineKeyboardButton> row = new ArrayList<>();
             row.add(InlineKeyboardButton.builder().text("\uD83C\uDFCB\uFE0F Фитнес").callbackData("Fitness").build());
             row.add(InlineKeyboardButton.builder().text("\uD83C\uDFAE Развлечения").callbackData("Games").build());
