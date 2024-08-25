@@ -13,8 +13,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class Bot extends TelegramLongPollingBot implements MessageSender {
-    private ArrayList<User> users = new ArrayList<>();
-    private boolean isStartGame;
     private GameFunctions gameFunctions;
     private final SaveForData saveForData;
 
@@ -43,40 +41,7 @@ public class Bot extends TelegramLongPollingBot implements MessageSender {
 
     @Override
     public void onUpdateReceived(Update update) {
-        long idUser;
-        if (update.hasCallbackQuery()) {
-            idUser = update.getCallbackQuery().getMessage().getChatId();
-            if (update.getCallbackQuery().getData().equals("Start New Game")) {
-                if (users.size() > 1) {
-                    gameFunctions.handleNewGameRequest(update, users);
-                } else {
-                    sendText(idUser, "\uD83C\uDD9A Нет пока месть аппонента \uD83C\uDD9A");
-                }
-                return;
-            }
-            if (users.size() > 1) {
-                if (isStartGame) {
-                    if (gameFunctions.isPlay()){
-                        gameFunctions.startGame(users);
-                        return;
-                    }
-                    gameFunctions.currentGame(update, users);
-                } else {
-                    isStartGame = true;
-                    gameFunctions.startGame(users);
-                }
-            } else {
-                sendText(idUser, "\uD83C\uDD9A Нет пока месть аппонента \uD83C\uDD9A");
-            }
-        } else if (update.hasMessage()) {
-            idUser = update.getMessage().getFrom().getId();
-            String name = update.getMessage().getFrom().getFirstName();
-            String textUser = update.getMessage().getText();
-            if (textUser.equals("/start")) {
-                users.add(new User(idUser, name));
-                sendButtons(idUser);
-            }
-        }
+
     }
 
     public void sendButtons(long idUser) {
