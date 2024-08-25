@@ -25,7 +25,7 @@ public class Bot extends TelegramLongPollingBot implements MessageSender {
 
     @Override
     public String getBotUsername() {
-        return "MaslyakExerciseGivebot";
+        return "MaslyakQuestBot";
     }
 
     @Override
@@ -42,15 +42,7 @@ public class Bot extends TelegramLongPollingBot implements MessageSender {
                 sendButtons(idUser);
             }
         } else if (update.hasCallbackQuery()) {
-            String callbackData = update.getCallbackQuery().getData();
-            long chatId = update.getCallbackQuery().getMessage().getChatId();
-
-            System.out.println("CallbackData: " + callbackData);
-
-            if (callbackData.equals("Выбрать Тему")) {
-                gameFunctions.sendButtonsTypeQuest(chatId);
-
-            }
+            gameFunctions.startGame(update);
         }
     }
 
