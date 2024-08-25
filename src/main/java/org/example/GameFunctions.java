@@ -25,7 +25,16 @@ public class GameFunctions {
     }
 
     private void sendButtons(long chatID) {
-
+            List<InlineKeyboardButton> row = new ArrayList<>();
+            row.add(InlineKeyboardButton.builder().text("\uD83C\uDFCB\uFE0F Фитнес").callbackData("Fitness").build());
+            row.add(InlineKeyboardButton.builder().text("\uD83C\uDFAE Развлечения").callbackData("Games").build());
+            row.add(InlineKeyboardButton.builder().text("\uD83D\uDCDA Саморазвитие").callbackData("SelfDevelopment").build());
+            row.add(InlineKeyboardButton.builder().text("\uD83D\uDCAC Общение ").callbackData("Talking").build());
+            row.add(InlineKeyboardButton.builder().text("\uD83C\uDF73 Кулинария").callbackData("Cooking").build());
+            List<List<InlineKeyboardButton>> rows = Collections.singletonList(row);
+            InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
+            keyboardMarkup.setKeyboard(rows);
+            messageSender.sendMenu(chatID, "Выбирай на какую тему хочешь получить квест \uD83D\uDC7A", keyboardMarkup);
     }
 
 
