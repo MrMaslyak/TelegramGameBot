@@ -14,11 +14,9 @@ import java.util.List;
 
 public class Bot extends TelegramLongPollingBot implements MessageSender {
     private GameFunctions gameFunctions;
-    private final SaveForData saveForData;
 
-    public Bot(GameFunctions gameFunctions, SaveForData saveForData) {
+    public Bot(GameFunctions gameFunctions) {
         this.gameFunctions = gameFunctions;
-        this.saveForData = saveForData;
     }
 
     public void setGameFunctions(GameFunctions gameFunctions) {
@@ -27,40 +25,44 @@ public class Bot extends TelegramLongPollingBot implements MessageSender {
 
     @Override
     public String getBotUsername() {
-        return "MaslyakGameBot";
+        return "MaslyakExerciseGivebot";
     }
 
     @Override
     public String getBotToken() {
-        try {
-            return saveForData.getToken("passwordBot.txt");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return "6658554435:AAFgsyHdgWEed1_MQ4Gxk0liU02TfOxUgpQ";//сделал уже так, просто хотел прям сделать для этого отдельного бота)
     }
 
     @Override
     public void onUpdateReceived(Update update) {
-
+        long idUser = update.getMessage().getFrom().getId();
+        String txt = update.getMessage().getText();
+        if (txt.equals("/start")) {
+            sendButtons(idUser);
+        }
     }
 
     public void sendButtons(long idUser) {
         InlineKeyboardButton next = InlineKeyboardButton.builder()
-                .text("Start Game").callbackData("Start Game")
+                .text("Выбрать Тему").callbackData("Выбрать Тему")
                 .build();
 
         InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
         List<InlineKeyboardButton> keyboard = new ArrayList<>();
         keyboard.add(next);
         keyboardMarkup.setKeyboard(Collections.singletonList(keyboard));
-        sendMenu(idUser, "\uD83D\uDC8E Добро пожаловать в игру \"Прятки с Алмазом\"! \uD83D\uDC8E\n" +
+        sendMenu(idUser, "\uD83D\uDC4B Привет!\n" +
                 "\n" +
-                "✨ Правила просты: Один игрок прячет алмаз за одной из кнопок, а второй игрок должен угадать, где он спрятан! Если угадаешь – победа твоя! \uD83C\uDF89 Если нет – алмаз останется в руках прячущего! \uD83D\uDE1C\n" +
+                "\uD83C\uDF89 Добро пожаловать в RandomQuest Bot – твой персональный генератор случайных заданий! \uD83C\uDFAF\n" +
                 "\n" +
-                "\uD83D\uDC65 Подключай друга и начинай игру!\n" +
-                "\uD83D\uDC65 Просто пусть зайдет в бота и нажмет кнопку Start Game!\n" +
+                "\uD83D\uDE80 Что ты хочешь сегодня сделать? Выбери категорию ниже, и я предложу тебе интересное задание для твоего дня:\n" +
                 "\n" +
-                "➡\uFE0F Жми /start и попробуй свои силы в этой увлекательной игре! Удачи! \uD83C\uDF40", keyboardMarkup);
+                "\uD83C\uDFCB\uFE0F Фитнес – время потренироваться!\n" +
+                "\uD83C\uDFAE Развлечения – пора весело провести время!\n" +
+                "\uD83D\uDCDA Саморазвитие – узнай что-то новое!\n" +
+                "\uD83D\uDCAC Общение – найди повод пообщаться!\n" +
+                "\uD83C\uDF73 Кулинария – приготовь что-то вкусное!\n" +
+                "\uD83D\uDC47 Выбери категорию и начни приключение!", keyboardMarkup);
     }
 
     @Override

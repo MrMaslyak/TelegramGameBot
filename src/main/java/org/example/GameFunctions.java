@@ -24,13 +24,11 @@ public class GameFunctions {
 
     }
 
-    private void sendHideButtons(long chatID) {
+    private void sendButtons(long chatID) {
 
     }
 
-    private void sendSearchButtons(long chatID) {
 
-    }
 
 
 

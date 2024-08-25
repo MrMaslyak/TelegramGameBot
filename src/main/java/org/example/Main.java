@@ -8,8 +8,7 @@ public class Main {
     public static void main(String[] args) throws TelegramApiException {
         TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
 
-        SaveForData saveForData = new SaveForData();
-        Bot bot = new Bot(null, saveForData);
+        Bot bot = new Bot(null);
 
         GameFunctions gameFunctions = new GameFunctions(bot);
         bot.setGameFunctions(gameFunctions);
