@@ -1,4 +1,4 @@
-package org.example;
+package org.example.JsonStructures;
 
 public class UserSettings {
     private long idUser;

@@ -1,4 +1,4 @@
-package org.example;
+package org.example.Interface;
 
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 

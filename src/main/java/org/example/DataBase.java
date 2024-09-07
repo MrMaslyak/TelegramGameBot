@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.Interface.IDB;
+
 import java.io.*;
 import java.util.ArrayList;
 
@@ -31,7 +33,7 @@ public class DataBase implements IDB {
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                list.add(line);
+                list.add(line + "\n");
             }
         } catch (IOException e) {
             System.out.println("An error occurred: " + e.getMessage());

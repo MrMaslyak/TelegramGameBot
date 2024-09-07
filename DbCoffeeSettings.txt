@@ -1,7 +1,4 @@
-{"type":"Капучино","size":"Средний","strength":"Крепкий","ingredients":"Чай","temp":"Теплый"}
-{"type":"Американо","size":"Средний","strength":"Крепкий","ingredients":"Сироп","temp":"Теплый"}
-{"type":"Американо","size":"Средний","strength":"Крепкий","ingredients":"Сироп","temp":"Теплый"}
-{"type":"Американо","size":"Средний","strength":"Крепкий","ingredients":"Сироп","temp":"Теплый"}
-{"type":"Американо","size":"Средний","strength":"Крепкий","ingredients":"Молоко","temp":"Теплый"}
-{"type":"Американо","size":"Маленький","strength":"Средний","ingredients":"Сироп","temp":"Теплый"}
-{"type":"Латте","size":"Средний","strength":"Крепкий","ingredients":"Чай","temp":"Теплый"}
+{"userSettings":{"idUser":1013557645,"message":"/start"},"coffeeSettings":{"type":"Латте","size":"Средний","strength":"Крепкий","ingredients":"Сироп","temp":"Теплый"}}
+{"userSettings":{"idUser":1013557645,"message":"/start"},"coffeeSettings":{"type":"Латте","size":"Большой","strength":"Средний","ingredients":"Молоко","temp":"Холодный"}}
+{"userSettings":{"idUser":1013557645,"message":"/start"},"coffeeSettings":{"type":"Латте","size":"Большой","strength":"Средний","ingredients":"Молоко","temp":"Теплый"}}
+{"userSettings":{"idUser":1013557645,"message":"/checkDB"},"coffeeSettings":{"type":"Латте","size":"Средний","strength":"Крепкий","ingredients":"Чай","temp":"Холодный"}}

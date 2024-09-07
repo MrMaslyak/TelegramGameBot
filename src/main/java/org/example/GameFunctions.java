@@ -1,6 +1,11 @@
 package org.example;
 
 import com.google.gson.Gson;
+import org.example.Interface.IDB;
+import org.example.Interface.MessageSender;
+import org.example.JsonStructures.CoffeeSettings;
+import org.example.JsonStructures.MainStructJson;
+import org.example.JsonStructures.UserSettings;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -11,11 +16,24 @@ import java.util.List;
 
 public class GameFunctions {
     private final MessageSender messageSender;
-    private final ArrayList<String> description = new ArrayList<>();
+    private Update update;
     private Gson gson = new Gson();
+    private final ArrayList<String> description = new ArrayList<>();
+    private long idUserGlobal;
+    private String idUserTextGlobal;
 
     public GameFunctions(MessageSender messageSender) {
         this.messageSender = messageSender;
+
+    }
+
+
+    public void setIdUserGlobal(long idUserGlobal) {
+        this.idUserGlobal = idUserGlobal;
+    }
+
+    public void setUserTextGlobal(String idUserTextGlobal) {
+        this.idUserTextGlobal = idUserTextGlobal;
     }
 
     public void currentGame(Update update) {
@@ -181,9 +199,11 @@ public class GameFunctions {
             coffeeDescription.append(desc).append("\n");
         }
 
+        UserSettings userSettings = new UserSettings(idUserGlobal, idUserTextGlobal);
         CoffeeSettings coffeeSettings = new CoffeeSettings(type, size, strength, ingredients, temp);
+        MainStructJson MainStructJson = new MainStructJson(userSettings, coffeeSettings);
 
-        String json = gson.toJson(coffeeSettings);
+        String json = gson.toJson(MainStructJson);
 
         IDB dataBase = DataBase.getInstance();
         dataBase.saveData(json);

@@ -1,6 +1,10 @@
 package org.example;
 
 import com.google.gson.Gson;
+import org.example.Interface.IDB;
+import org.example.Interface.MessageSender;
+import org.example.JsonStructures.CoffeeSettings;
+import org.example.JsonStructures.MainStructJson;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -17,17 +21,14 @@ public class Bot extends TelegramLongPollingBot implements MessageSender {
     private boolean isStartGame;
     private GameFunctions gameFunctions;
     private final SaveForData saveForData;
-    private static Update update;
     private Gson gson = new Gson();
+    private long idUserGlobal;
+    private String textUserGlobal;
     public Bot(GameFunctions gameFunctions, SaveForData saveForData) {
         this.gameFunctions = gameFunctions;
         this.saveForData = saveForData;
     }
 
-
-    public static Update getUpdate() {
-        return update;
-    }
 
 
     public void setGameFunctions(GameFunctions gameFunctions) {
@@ -54,30 +55,34 @@ public class Bot extends TelegramLongPollingBot implements MessageSender {
             long idUser = update.getMessage().getChatId();
             String text = update.getMessage().getText();
             IDB dataBase = DataBase.getInstance();
-
+            idUserGlobal = idUser;
+            textUserGlobal = text;
 
             if (text.equals("/start")) {
                 sendButtons(idUser);
             }
             if (text.equals("/checkDB")) {
                 ArrayList<String> data = dataBase.loadData();
-                ArrayList<CoffeeSettings> coffeeSettings = new ArrayList<>();
+                ArrayList<MainStructJson> mainStructJsons = new ArrayList<>();
                 for (String line : data) {
-                    CoffeeSettings settings = gson.fromJson(line, CoffeeSettings.class);
+                    MainStructJson settings = gson.fromJson(line, MainStructJson.class);
+
+
                     if (settings != null) {
-                        coffeeSettings.add(settings);
+                        mainStructJsons.add(settings);
                     } else {
                         sendText(idUser, "Ошибка при преобразовании данных из JSON: " + line);
                     }
                 }
-                sendText(idUser, "Данные из базы: " + gson.toJson(coffeeSettings));
+                sendText(idUser, "Данные из базы: " +"\n" +gson.toJson(mainStructJsons));
             }
         } else if (update.hasCallbackQuery()) {
             String callbackData = update.getCallbackQuery().getData();
             long chatId = update.getCallbackQuery().getMessage().getChatId();
 
             System.out.println("CallbackData: " + callbackData);
-
+            gameFunctions.setIdUserGlobal(idUserGlobal);
+            gameFunctions.setUserTextGlobal(textUserGlobal);
             if (callbackData.equals("Начать приготовление")) {
                 gameFunctions.sendTypeCoffee(chatId);
                 gameFunctions.currentGame(update);
@@ -134,4 +139,5 @@ public class Bot extends TelegramLongPollingBot implements MessageSender {
             throw new RuntimeException(e);
         }
     }
+
 }
