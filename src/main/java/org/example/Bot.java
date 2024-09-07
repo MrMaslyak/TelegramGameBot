@@ -1,5 +1,6 @@
 package org.example;
 
+import com.google.gson.Gson;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -17,7 +18,7 @@ public class Bot extends TelegramLongPollingBot implements MessageSender {
     private GameFunctions gameFunctions;
     private final SaveForData saveForData;
     private static Update update;
-
+    private Gson gson = new Gson();
     public Bot(GameFunctions gameFunctions, SaveForData saveForData) {
         this.gameFunctions = gameFunctions;
         this.saveForData = saveForData;
@@ -52,8 +53,24 @@ public class Bot extends TelegramLongPollingBot implements MessageSender {
         if (update.hasMessage() && update.getMessage().hasText()) {
             long idUser = update.getMessage().getChatId();
             String text = update.getMessage().getText();
+            IDB dataBase = DataBase.getInstance();
+
+
             if (text.equals("/start")) {
                 sendButtons(idUser);
+            }
+            if (text.equals("/checkDB")) {
+                ArrayList<String> data = dataBase.loadData();
+                ArrayList<CoffeeSettings> coffeeSettings = new ArrayList<>();
+                for (String line : data) {
+                    CoffeeSettings settings = gson.fromJson(line, CoffeeSettings.class);
+                    if (settings != null) {
+                        coffeeSettings.add(settings);
+                    } else {
+                        sendText(idUser, "Ошибка при преобразовании данных из JSON: " + line);
+                    }
+                }
+                sendText(idUser, "Данные из базы: " + gson.toJson(coffeeSettings));
             }
         } else if (update.hasCallbackQuery()) {
             String callbackData = update.getCallbackQuery().getData();

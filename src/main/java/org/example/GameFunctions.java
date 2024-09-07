@@ -1,5 +1,6 @@
 package org.example;
 
+import com.google.gson.Gson;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -11,6 +12,7 @@ import java.util.List;
 public class GameFunctions {
     private final MessageSender messageSender;
     private final ArrayList<String> description = new ArrayList<>();
+    private Gson gson = new Gson();
 
     public GameFunctions(MessageSender messageSender) {
         this.messageSender = messageSender;
@@ -160,11 +162,33 @@ public class GameFunctions {
     }
 
     void sendCoffeeDescription(long chatID) {
-        StringBuilder coffeeDescription = new StringBuilder("Ваш кофе готов!\n\n");
+        String type = null, size = null, strength = null, ingredients = null, temp = null;
+        StringBuilder coffeeDescription = new StringBuilder("");
+        for (String desc : description) {
+            if (desc.contains("Тип кофе")) {
+                type = desc.split(": ")[1];
+            } else if (desc.contains("Размер кофе")) {
+                size = desc.split(": ")[1];
+            } else if (desc.contains("Крепость кофе")) {
+                strength = desc.split(": ")[1];
+            } else if (desc.contains("Ингредиенты")) {
+                ingredients = desc.split(": ")[1];
+            } else if (desc.contains("Температура кофе")) {
+                temp = desc.split(": ")[1];
+            }
+        }
         for (String desc : description) {
             coffeeDescription.append(desc).append("\n");
         }
-        messageSender.sendText(chatID, coffeeDescription.toString());
+
+        CoffeeSettings coffeeSettings = new CoffeeSettings(type, size, strength, ingredients, temp);
+
+        String json = gson.toJson(coffeeSettings);
+
+        IDB dataBase = DataBase.getInstance();
+        dataBase.saveData(json);
+
+        messageSender.sendText(chatID, "Ваш кофе готов!\n" + coffeeDescription.toString());
     }
 
     class TimerCoffee extends Thread {

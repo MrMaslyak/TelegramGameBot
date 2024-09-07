@@ -1,0 +1,7 @@
+{"type":"Капучино","size":"Средний","strength":"Крепкий","ingredients":"Чай","temp":"Теплый"}
+{"type":"Американо","size":"Средний","strength":"Крепкий","ingredients":"Сироп","temp":"Теплый"}
+{"type":"Американо","size":"Средний","strength":"Крепкий","ingredients":"Сироп","temp":"Теплый"}
+{"type":"Американо","size":"Средний","strength":"Крепкий","ingredients":"Сироп","temp":"Теплый"}
+{"type":"Американо","size":"Средний","strength":"Крепкий","ingredients":"Молоко","temp":"Теплый"}
+{"type":"Американо","size":"Маленький","strength":"Средний","ingredients":"Сироп","temp":"Теплый"}
+{"type":"Латте","size":"Средний","strength":"Крепкий","ingredients":"Чай","temp":"Теплый"}
