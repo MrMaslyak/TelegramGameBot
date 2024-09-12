@@ -1,5 +1,11 @@
 package org.example;
 
+import com.google.gson.Gson;
+import org.example.DataBaseFunc.MainJson;
+import org.example.DataBaseFunc.StartGameDB;
+import org.example.DataBaseFunc.UserSetting;
+import org.example.Inteface.IDB;
+import org.example.Inteface.MessageSender;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -13,10 +19,11 @@ import java.util.Collections;
 import java.util.List;
 
 public class Bot extends TelegramLongPollingBot implements MessageSender {
-    private ArrayList<User> users = new ArrayList<>();
+    private ArrayList<UserSetting> userSettings = new ArrayList<>();
     private boolean isStartGame;
     private GameFunctions gameFunctions;
     private final SaveForData saveForData;
+    private Gson gson = new Gson();
 
     public Bot(GameFunctions gameFunctions, SaveForData saveForData) {
         this.gameFunctions = gameFunctions;
@@ -44,26 +51,41 @@ public class Bot extends TelegramLongPollingBot implements MessageSender {
     @Override
     public void onUpdateReceived(Update update) {
         long idUser;
+        IDB dataBase = DataBase.getInstance();
+        gameFunctions.setUpdate(update);
         if (update.hasCallbackQuery()) {
             idUser = update.getCallbackQuery().getMessage().getChatId();
             if (update.getCallbackQuery().getData().equals("Start New Game")) {
-                if (users.size() > 1) {
-                    gameFunctions.handleNewGameRequest(update, users);
+                if (userSettings.size() > 1) {
+                    gameFunctions.handleNewGameRequest(update, userSettings);
                 } else {
                     sendText(idUser, "\uD83C\uDD9A Нет пока месть аппонента \uD83C\uDD9A");
                 }
                 return;
             }
-            if (users.size() > 1) {
+            if ((update.getCallbackQuery().getData().equals("load"))) {
+                ArrayList<String> data = dataBase.loadData();
+                ArrayList<MainJson> mainStructJsons = new ArrayList<>();
+                for (String line : data) {
+                    MainJson settings = gson.fromJson(line, MainJson.class);
+                    if (settings != null) {
+                        mainStructJsons.add(settings);
+                    } else {
+                        sendText(idUser, "Ошибка при преобразовании данных из JSON: " + line);
+                    }
+                }
+                sendText(idUser, "Данные из базы: " +"\n" +gson.toJson(mainStructJsons));
+            }
+            if (userSettings.size() > 1) {
                 if (isStartGame) {
                     if (gameFunctions.isPlay()){
-                        gameFunctions.startGame(users);
+                        gameFunctions.startGame(userSettings);
                         return;
                     }
-                    gameFunctions.currentGame(update, users);
+                    gameFunctions.currentGame(update, userSettings);
                 } else {
                     isStartGame = true;
-                    gameFunctions.startGame(users);
+                    gameFunctions.startGame(userSettings);
                 }
             } else {
                 sendText(idUser, "\uD83C\uDD9A Нет пока месть аппонента \uD83C\uDD9A");
@@ -73,7 +95,7 @@ public class Bot extends TelegramLongPollingBot implements MessageSender {
             String name = update.getMessage().getFrom().getFirstName();
             String textUser = update.getMessage().getText();
             if (textUser.equals("/start")) {
-                users.add(new User(idUser, name));
+                userSettings.add(new UserSetting(idUser, name));
                 sendButtons(idUser);
             }
         }

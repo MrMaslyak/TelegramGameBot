@@ -1,11 +1,11 @@
-package org.example;
+package org.example.DataBaseFunc;
 
-public class User {
+public class UserSetting {
 
     private long chatID;
     private String name;
 
-    public User(long chatID, String name) {
+    public UserSetting(long chatID, String name) {
         this.chatID = chatID;
         this.name = name;
     }
