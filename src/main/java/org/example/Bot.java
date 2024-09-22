@@ -1,8 +1,8 @@
 package org.example;
 
 import com.google.gson.Gson;
+import org.example.DataBaseFunc.DataBase;
 import org.example.DataBaseFunc.MainJson;
-import org.example.DataBaseFunc.StartGameDB;
 import org.example.DataBaseFunc.UserSetting;
 import org.example.Inteface.IDB;
 import org.example.Inteface.MessageSender;

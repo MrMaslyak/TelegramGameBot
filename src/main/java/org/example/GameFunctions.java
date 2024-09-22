@@ -1,6 +1,7 @@
 package org.example;
 
 import com.google.gson.Gson;
+import org.example.DataBaseFunc.DataBase;
 import org.example.DataBaseFunc.MainJson;
 import org.example.DataBaseFunc.StartGameDB;
 import org.example.DataBaseFunc.UserSetting;
@@ -21,7 +22,7 @@ public class GameFunctions {
     private boolean isPlay;
     private Gson gson = new Gson();
     private Update update;
-
+    private IDB dataBase = DataBase.getInstance();
 
     public GameFunctions(MessageSender messageSender) {
         this.messageSender = messageSender;
@@ -39,13 +40,10 @@ public class GameFunctions {
             messageSender.sendText(users.get(1).getChatID(), "\uD83D\uDE42\u200D↕\uFE0F Жди \uD83D\uDE42\u200D↕\uFE0F");
             sendHideButtons(users.get(0).getChatID());
             isPlay = false;
-            UserSetting userSetting = new UserSetting(update.getCallbackQuery().getMessage().getFrom().getId(), update.getCallbackQuery().getMessage().getChat().getFirstName());
-            StartGameDB startGameSetting = new StartGameDB(users.get(0).getName(),users.get(1).getName() , users.get(0).getChatID(), users.get(1).getChatID(), isPlay);
-            MainJson mainJson = new MainJson(startGameSetting, userSetting);
 
-            String json = gson.toJson(mainJson);
-            IDB dataBase = DataBase.getInstance();
-            dataBase.save(json);
+
+            dataBase.save_user(users.get(0).getChatID(),users.get(0).getName(), true);
+            dataBase.save_user(users.get(1).getChatID(),users.get(1).getName(), false);
 
         }
     }
@@ -64,11 +62,14 @@ public class GameFunctions {
                 messageSender.sendText(userSettings.get(1).getChatID(), "Угадал! \nТы нашел алмаз! ❤\uFE0F\u200D\uD83D\uDD25");
                 messageSender.sendText(userSettings.get(0).getChatID(), "<----> <----> <--->");
                 messageSender.sendText(userSettings.get(0).getChatID(), "Ты проиграл! ☹\uFE0F");
+                dataBase.save_game_user_stats(userSettings.get(1).getName(), userSettings.get(0).getName());
+
             } else {
                 messageSender.sendText(userSettings.get(1).getChatID(), "Неправильно, алмаз был спрятан в " + answer + "!");
                 messageSender.sendText(userSettings.get(1).getChatID(), "Ты проиграл! ☹\uFE0F");
                 messageSender.sendText(userSettings.get(0).getChatID(), "<----> <----> <--->");
                 messageSender.sendText(userSettings.get(0).getChatID(), "\uD83D\uDCA5 Ты победил! \uD83D\uDCA5");
+                dataBase.save_game_user_stats(userSettings.get(0).getName(), userSettings.get(1).getName());
             }
             offerNewGame(userSettings);
         }
